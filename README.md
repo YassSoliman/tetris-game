@@ -1,7 +1,6 @@
 # tetris-game
 Final goal : Multiplayer (socket.io) tetris game, coop not vs
-![Image of tetris blocks]
-(https://cdn.discordapp.com/attachments/109466068254199808/480869416796422145/tetris_letters.png)
+![Image of tetris blocks](https://cdn.discordapp.com/attachments/109466068254199808/480869416796422145/tetris_letters.png)
 ## Funtions :
   * accelerate(space or down)
   * spinning (up arrow)

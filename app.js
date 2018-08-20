@@ -1,5 +1,5 @@
 const FRAMERATE = 10;
-const UNIT = 20;
+var UNIT = 20;
 
 // global variables
 var cvs;

@@ -1,5 +1,6 @@
 # tetris-game
 ![Image of tetris blocks](http://meatfighter.com/tetrisprinteralgorithm/names.png)
+![Image of tetris block rotations](https://vignette.wikia.nocookie.net/tetrisconcept/images/3/3d/SRS-pieces.png/revision/latest?cb=20060626173148)
 ## Funtions :
   * accelerate(space or down)
   * spinning (up arrow)

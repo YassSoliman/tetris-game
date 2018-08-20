@@ -1,5 +1,5 @@
 const FRAMERATE = 10;
-var UNIT = 20;
+var UNIT = 25;
 
 // global variables
 var cvs;
@@ -24,7 +24,7 @@ function update() {
                         
     // draw everything
     drawBlock('I', 10, 10);  
-    drawBlock('J', 30, 30);
+    drawBlock('J', 35, 30);
 }
 
 // draw a specific block
@@ -32,8 +32,11 @@ function drawBlock(type, x, y){
   switch(type){
     case 'I':
       drawUnit(x, y, '#0092ff');
+      drawUnit(x*2, y, '#0092ff');
+      drawUnit(x*3, y, '#0092ff');
+      drawUnit(x*4, y, '#0092ff');
       break;
-	case 'J':
+    case 'J':
       drawUnit(x, y , '#ff0000');
       break;
   }

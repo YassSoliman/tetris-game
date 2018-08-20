@@ -1,4 +1,4 @@
-const FRAMERATE = 10;
+const FRAMERATE = 60;
 var UNIT = 25;
 
 // global variables
@@ -24,7 +24,7 @@ function update() {
                         
     // draw everything
     drawBlock('I', 10, 10);  
-    drawBlock('J', 35, 30);
+    drawBlock('J', 35, 35);
 }
 
 // draw a specific block
@@ -42,9 +42,9 @@ function drawBlock(type, x, y){
 // draw I block
 function drawI(x, y){
 	drawUnit(x, y, '#0092ff');
-	drawUnit(x*2, y, '#0092ff');
-	drawUnit(x*3, y, '#0092ff');
-	drawUnit(x*4, y, '#0092ff');
+	drawUnit(x+UNIT, y, '#0092ff');
+	drawUnit(x+UNIT*2, y, '#0092ff');
+	drawUnit(x+UNIT*3, y, '#0092ff');
 }
 
 // draw a rectangle with or without a stroke

@@ -56,6 +56,6 @@ function drawUnit(x, y, color){
 	drawRect(x+UNIT-size, y, size, UNIT, 'black', false); // Draw right black border
 	drawRect(x, y+UNIT-size, UNIT, size, 'black', false); // Draw left black border
 	drawRect(x, y, size, size, 'white', false); // Draw top right white dot
-	drawRect(x+size, y+size, UNIT, UNIT*2, 'white', false); // Draw top right top border
-	drawRect(x+size, y+size, UNIT*2, UNIT, 'white', false); // Draw top right left border 
+	drawRect(x+size, y+size, size, size*2, 'white', false); // Draw top right top border
+	drawRect(x+size, y+size, size*2, size, 'white', false); // Draw top right left border 
 }

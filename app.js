@@ -31,7 +31,7 @@ function update() {
 function drawBlock(type, x, y){
   switch(type){
     case 'I':
-      drawI();
+      drawI(x, y);
       break;
 		case 'J':
       drawUnit(x, y , '#ff0000');
@@ -40,7 +40,7 @@ function drawBlock(type, x, y){
 }
 
 // draw I block
-function drawI(){
+function drawI(x, y){
 	drawUnit(x, y, '#0092ff');
 	drawUnit(x*2, y, '#0092ff');
 	drawUnit(x*3, y, '#0092ff');

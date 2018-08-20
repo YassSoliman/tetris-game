@@ -31,15 +31,20 @@ function update() {
 function drawBlock(type, x, y){
   switch(type){
     case 'I':
-      drawUnit(x, y, '#0092ff');
-      drawUnit(x*2, y, '#0092ff');
-      drawUnit(x*3, y, '#0092ff');
-      drawUnit(x*4, y, '#0092ff');
+      drawI();
       break;
-    case 'J':
+		case 'J':
       drawUnit(x, y , '#ff0000');
       break;
   }
+}
+
+// draw I block
+function drawI(){
+	drawUnit(x, y, '#0092ff');
+	drawUnit(x*2, y, '#0092ff');
+	drawUnit(x*3, y, '#0092ff');
+	drawUnit(x*4, y, '#0092ff');
 }
 
 // draw a rectangle with or without a stroke

@@ -33,7 +33,7 @@ function drawBlock(type, x, y){
     case 'I':
       drawI(x, y);
       break;
-		case 'J':
+    case 'J':
       drawUnit(x, y , '#ff0000');
       break;
   }

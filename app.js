@@ -61,7 +61,7 @@ var I = {
         color: '#0092ff'
 }; 
 var J = { 
-  	blocks: [0x0E20, 0x4448, 0x4444, 0x00F0],
+  	blocks: [0x0E20, 0x44C0, 0x8E00, 0x6440],
         color: '#ff0000'
 }; 
 //  8 4 2 1

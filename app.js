@@ -34,9 +34,135 @@ function drawBlock(type, x, y){
       drawI(x, y);
       break;
     case 'J':
-      drawUnit(x, y , '#ff0000');
+      drawJ(x, y);
+      break;
+    case 'L':
+      drawL(x, y);
       break;
   }
+}
+// One function that calculates position, rotation direction of any piece
+function draw(block, direction, x, y){
+	var posx=0, posy=0, bit;
+  for(bit = 0x8000; bit > 0; bit = bit >> 1,posx+=UNIT){
+    if(posx === 4*UNIT){
+      posy += UNIT;
+      posx = 0;
+    }
+    if(bit & block.blocks[direction]){
+      console.log('Block here: ' + bit);
+      drawUnit(x + posx, y + posy, '#0092ff');
+    }
+  }  
+}
+
+var I = { 
+  	blocks: [0x2222, 0x0F00, 0x4444, 0x00F0],
+        color: '#0092ff'
+}; 
+var J = { 
+  	blocks: [0x0E20, 0x4448, 0x4444, 0x00F0],
+        color: '#ff0000'
+}; 
+//  8 4 2 1
+//[ 0 X 0 O		1000		0x4000
+//  0 X 0 O	  100			0x0400 
+//  X X 0 O   10			0x0040
+//  O O 0 O ] 1				0x0008
+//										0x4448
+var L = { 
+  	blocks: [0x1F00, 0x000, 0x0000, 0x0000],
+        color: '#0092ff'
+}; 
+var O = { 
+  	blocks: [0x6600, 0x6600, 0x6600, 0x6600],
+        color: '#0092ff'
+}; 
+//  8 4 2 1
+//[ O 1 1 O		1000		0x0000
+//  O 1 1 O	  100			0x0000 
+//  O O O O   10			0x0000+ 0x4000 + 0x2000 + 0x0400 + 0x0200 = 0x6600
+//  O O O O ] 1				0x0000
+//										0x0000
+var S = { 
+  	blocks: [0xA5A5, 0x0F00, 0x4444, 0x00F0],
+        color: '#0092ff'
+}; 
+var T = { 
+  	blocks: [0xA5A5, 0x0F00, 0x4444, 0x00F0],
+        color: '#0092ff'
+}; 
+var Z = { 
+	blocks: [0xA5A5, 0x0F00, 0x4444, 0x00F0],
+        color: '#0092ff'
+}; 
+
+
+// Rotations go from 0 - 3
+// rotations are I.blocks[rotationIndex];
+// Vertical -- 0
+//  8 4 2 1
+//[ O O X O		1000		0x2000
+//  O O X O	  100			0x0200
+//  O O X O   10			0x0020
+//  O O X O ] 1				0x0002
+//										0x2222
+
+// 0x8000 --> 0x4000 --> 0x2000 --> 0x1000 --> 0x0800 -->  0x0400 --> 0x0200 --> 0x0100 --> 0x0080 --> 0x0040 --> 0x0020 --> 0x0010
+
+// Horizontal -- 1
+//  8 4 2 1
+//[ O O O O		1000		0x0000
+//  X X X X	  100			0x0800 + 0x0400 + 0x0200 + 0x0100 = 0x0F00
+//  O O O O   10			0x0000
+//  O O O O ] 1				0x0000
+//										0x0F00
+
+// Vertical -- 2
+//  8 4 2 1
+//[ O X O O		1000		0x4000
+//  O X O O	  100			0x0400
+//  O X O O   10			0x0040
+//  O X O O ] 1				0x0004
+//										0x4444
+
+// Horizontal -- 3
+//  8 4 2 1
+//[ O O O O		1000		0x0000
+//  O O O O	  100			0x0000 
+//  X X X X   10			0x0080 + 0x0040 + 0x0020 + 0x0010 = 0x00F0
+//  O O O O ] 1				0x0000
+//										0x0000
+
+//  8 4 2 1
+//[ O 1 1 O		1000		0x0000
+//  O 1 1 O	  100			0x0000 
+//  O O O O   10			0x0000+ 0x4000 + 0x2000 + 0x0400 + 0x0200 = 0x6600
+//  O O O O ] 1				0x0000
+//										0x0000
+
+// draw O block
+function drawO(x, y){
+  drawUnit(x, y , '#4900ff');
+  drawUnit(x+UNIT, y, '#4900ff');
+  drawUnit(x+UNIT, y+UNIT , '#4900ff');
+  drawUnit(x, y+UNIT , '#4900ff');
+}
+
+// draw L block
+function drawL(x, y){
+  drawUnit(x, y , '#49ff00');
+  drawUnit(x, y-UNIT, '#49ff00');
+  drawUnit(x+UNIT, y-UNIT , '#49ff00');
+  drawUnit(x+UNIT*2, y-UNIT , '#49ff00');
+}
+
+// draw J block
+function drawJ(x, y){
+  drawUnit(x, y , '#ff0000');
+  drawUnit(x+UNIT, y , '#ff0000');
+  drawUnit(x+UNIT*2, y , '#ff0000');
+  drawUnit(x+UNIT*2, y+UNIT , '#ff0000');
 }
 
 // draw I block
@@ -45,6 +171,30 @@ function drawI(x, y){
 	drawUnit(x+UNIT, y, '#0092ff');
 	drawUnit(x+UNIT*2, y, '#0092ff');
 	drawUnit(x+UNIT*3, y, '#0092ff');
+}
+
+//draw S block
+function drawS(x, y){
+  drawUnit(x, y, '#00ff92');
+  drawUnit(x-UNIT, y, '#00ff92');
+  drawUnit(x, y+UNIT, '#00ff92');
+  drawUnit(x+UNIT, y+UNIT, '#00ff92');
+}
+
+//draw T block
+function drawT(x,y){
+  drawUnit(x, y, '#ffdb00');
+  drawUnit(x, y-UNIT, '#ffdb00');
+  drawUnit(x+UNIT, y, '#ffdb00');
+  drawUnit(x-UNIT, y, '#ffdb00');
+}
+
+//draw Z block
+function drawZ(x,y){
+  drawUnit(x, y, '#ff00db');
+  drawUnit(x, y+UNIT, '#ff00db');
+  drawUnit(x+UNIT, y, '#ff00db');
+  drawUnit(x-UNIT, y+UNIT, '#ff00db');
 }
 
 // draw a rectangle with or without a stroke

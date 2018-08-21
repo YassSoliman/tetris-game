@@ -62,13 +62,13 @@ var S = {
         color: '#00ff92'
 }; 
 var T = { 
-  	blocks: [0xA5A5, 0x0F00, 0x4444, 0x00F0],
-        color: '#0092ff'
-}; 
+  	blocks: [0x4E00, 0x4640, 0x0E40, 0x4C40],
+        color: '#ffdb00'
+}; 								
 var Z = { 
-	blocks: [0xA5A5, 0x0F00, 0x4444, 0x00F0],
-        color: '#0092ff'
-}; 
+  	blocks: [0xC600, 0x2640, 0x0C60, 0x4C80],
+        color: '#ff00db'
+};
 
 
 // Rotations go from 0 - 3

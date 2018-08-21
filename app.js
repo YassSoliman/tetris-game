@@ -51,7 +51,7 @@ function draw(block, direction, x, y){
     }
     if(bit & block.blocks[direction]){
       console.log('Block here: ' + bit);
-      drawUnit(x + posx, y + posy, '#0092ff');
+      drawUnit(x + posx, y + posy, block.color);
     }
   }  
 }

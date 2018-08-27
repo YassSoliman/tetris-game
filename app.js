@@ -85,7 +85,7 @@ function drawRect(x, y, width, height, rectColor, wantsStroke, strokeColor){
 
 // draw one unit
 function drawUnit(x, y, color){
-  var size = 3;
+    var size = 3;
 	drawRect(x, y, UNIT, UNIT, color, false); // Draw main color
 	drawRect(x+UNIT-size, y, size, UNIT, 'black', false); // Draw right black border
 	drawRect(x, y+UNIT-size, UNIT, size, 'black', false); // Draw left black border

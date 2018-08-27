@@ -54,7 +54,7 @@ function update() {
     // check logic
                         
     // draw everything
-
+    drawUI('#251c17');
 }
 
 // One function that calculates position, rotation direction of any piece
@@ -92,4 +92,25 @@ function drawUnit(x, y, color){
 	drawRect(x, y, size, size, 'white', false); // Draw top right white dot
 	drawRect(x+size, y+size, size, size*2, 'white', false); // Draw top right top border
 	drawRect(x+size, y+size, size*2, size, 'white', false); // Draw top right left border 
+}
+
+// draw user interface
+function drawUI(color){
+    for(var i=0; i<22; i++){
+        drawUnit(UNIT*i, 0, color);
+        drawUnit(0, UNIT*i, color);
+        drawUnit((cvs.width)-UNIT, UNIT*i, color);
+        drawUnit((cvs.width)-UNIT*6, UNIT*i, color);
+        drawUnit(UNIT*i, (cvs.height)-UNIT, color);
+        if(i>=12){
+            drawUnit(UNIT*i, UNIT*5, color);
+        }
+    }
+    // draw(J, 3, 12*UNIT, UNIT+15);
+    // draw(L, 1, 12*UNIT, UNIT+15);
+    // draw(I, 1, 12*UNIT, UNIT+15);
+    // draw(O, 1, 12*UNIT, UNIT*2);
+    // draw(S, 1, 12*UNIT, UNIT+15);
+    // draw(Z, 1, 12*UNIT, UNIT+15);
+    // draw(T, 1, 12*UNIT, UNIT+15);
 }

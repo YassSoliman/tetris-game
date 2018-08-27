@@ -54,6 +54,7 @@ function update() {
     // check logic
                         
     // draw everything
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
 }
 
@@ -106,6 +107,13 @@ function drawUI(color){
             drawUnit(UNIT*i, UNIT*5, color);
         }
     }
+    ctx.font = "25px sans-serif";
+    ctx.textAlign = 'center'
+    ctx.fillStyle = 'blue';
+    ctx.fillText("Score", 14*UNIT, 7*UNIT);
+    ctx.strokeStyle = 'lightblue';
+    ctx.strokeText("Score", 14*UNIT, 7*UNIT);
+
     // draw(J, 3, 12*UNIT, UNIT+15);
     // draw(L, 1, 12*UNIT, UNIT+15);
     // draw(I, 1, 12*UNIT, UNIT+15);

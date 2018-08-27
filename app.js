@@ -114,3 +114,18 @@ function drawUI(color){
     // draw(Z, 1, 12*UNIT, UNIT+15);
     // draw(T, 1, 12*UNIT, UNIT+15);
 }
+
+// draw next block preview
+function drawNext(block){
+    switch (block) {
+        case J:
+            draw(block, 3, 12*UNIT, UNIT+15);
+            break;
+        case O:
+            draw(block, 1, 12*UNIT, UNIT*2);
+            break;
+        default:
+            draw(block, 1, 12*UNIT, UNIT+15);
+            break;
+    }
+}

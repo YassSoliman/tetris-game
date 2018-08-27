@@ -34,7 +34,29 @@ var Z = {
   	blocks: [0xC600, 0x2640, 0x0C60, 0x4C80],
     color: '#ff00db'
 };
-var gameBlocks = [I, J, L, O, S, T, Z];
+function Tetromino(blockTemplate){
+    var block = blockTemplate
+    var rotation = 0;
+    var x = 8;
+    var y = 2;
+    var counter = 0;
+    var falling = true;
+    var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char)=>char!=='0').length
+    this.spawn = function(){
+        draw(block,rotation,x*UNIT,y*UNIT);
+        if(counter>=30 && falling){
+            counter=0;
+            if(y >= cvs.height/UNIT-length){
+                falling=false;
+            }else{
+                y+=1;
+            }
+        }
+        counter++
+    }
+
+}
+var gameTetrominos = [new Tetromino(I)];
 
 // when window loads run this function
 window.addEventListener("load", start());
@@ -51,12 +73,17 @@ function start(){
 }
 
 function update() {
+    //Clear canveas
+    ctx.clearRect(0,0,cvs.width,cvs.height)
     // check logic
-                        
+    gameTetrominos.forEach((tetromino)=>tetromino.spawn());
     // draw everything
 
 }
 
+function FallBlock(block){
+
+}
 // One function that calculates position, rotation direction of any piece
 function draw(block, direction, x, y){
 	var posx=0, posy=0, bit;

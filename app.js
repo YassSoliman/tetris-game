@@ -4,6 +4,8 @@ var UNIT = 25;
 // global variables
 var cvs;
 var ctx;
+var score = 0;
+var level = 1;
 
 // game blocks
 var I = { 
@@ -67,7 +69,7 @@ function draw(block, direction, x, y){
             posx = 0;
         }
         if(bit & block.blocks[direction]){
-            console.log('Block here: ' + bit);
+            // console.log('Block here: ' + bit);
             drawUnit(x + posx, y + posy, block.color);
         }
     }  
@@ -107,12 +109,53 @@ function drawUI(color){
             drawUnit(UNIT*i, UNIT*5, color);
         }
     }
+    // Score and Level and controls text
     ctx.font = "25px sans-serif";
     ctx.textAlign = 'center'
     ctx.fillStyle = 'blue';
     ctx.fillText("Score", 14*UNIT, 7*UNIT);
+    ctx.fillText("Level", 14*UNIT, 9*UNIT+10);
+    ctx.fillText("Controls", 14*UNIT, 11*UNIT+20);
     ctx.strokeStyle = 'lightblue';
     ctx.strokeText("Score", 14*UNIT, 7*UNIT);
+    ctx.strokeText("Level", 14*UNIT, 9*UNIT+10);
+    ctx.strokeText("Controls", 14*UNIT, 11*UNIT+20);
+    ctx.fillStyle = 'lightgray';
+
+    // Rectangles for score and controls
+    drawRect(UNIT*12.2, UNIT*7+3, 90, 25, "lightgray", true, "lightblue"); 
+    drawRect(UNIT*12.2, UNIT*12+3, 90, UNIT*4-15, "lightgray", true, "lightblue"); 
+
+    // Circle for level
+    ctx.beginPath();
+    ctx.arc(UNIT*14, UNIT*10+5, 11, 0, 2 * Math.PI, false);
+    ctx.fill();
+    ctx.stroke();
+
+    // Score and level text
+    ctx.fillStyle = 'white';
+    ctx.fillText(score, 14*UNIT, 8*UNIT);
+    ctx.fillText(level, 14*UNIT, 10*UNIT+13);
+    ctx.strokeStyle = 'black';
+    ctx.strokeText(score, 14*UNIT, 8*UNIT);
+    ctx.strokeText(level, 14*UNIT, 10*UNIT+13);
+
+    // Controls text
+    ctx.fillStyle = 'black';
+    ctx.strokeStyle = 'lightcoral';
+    ctx.font = "14px sans-serif"
+    ctx.fillText("Movement", 14*UNIT, 12*UNIT+15);
+    ctx.strokeText("Movement", 14*UNIT, 12*UNIT+15);
+    ctx.fillText("Accelerate", 14*UNIT, 13*UNIT+20);
+    ctx.strokeText("Accelerate", 14*UNIT, 13*UNIT+20);
+    ctx.fillText("Rotate", 14*UNIT, 15*UNIT);
+    ctx.strokeText("Rotate", 14*UNIT, 15*UNIT);
+    ctx.font = "10px sans-serif"
+    ctx.fillText("Left/Right Arrows", 14*UNIT, 13*UNIT);
+    ctx.fillText("Space/Down Arrow", 14*UNIT, 14*UNIT+5);
+    ctx.fillText("Up Arrow", 14*UNIT, 15*UNIT+10);
+
+    drawNext(S);
 
     // draw(J, 3, 12*UNIT, UNIT+15);
     // draw(L, 1, 12*UNIT, UNIT+15);

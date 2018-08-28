@@ -7,19 +7,19 @@ var ctx;
 var score = 0;
 var level = 1;
 var nextMove = true;
-var nextBlock;
+
 
 // game blocks
 var I = {
-    blocks: [0x2222, 0x0F00, 0x4444, 0x00F0],
+    blocks: [0x2222, 0xF000, 0x4444, 0xF000],
     color: '#0092ff'
 };
 var J = {
-    blocks: [0x0E20, 0x44C0, 0x8E00, 0x6440],
+    blocks: [0xE200, 0x44C0, 0x8E00, 0x6440],
     color: '#ff0000'
 };
 var L = {
-    blocks: [0x2E00, 0x4460, 0x0E80, 0xC440],
+    blocks: [0x2E00, 0x4460, 0xE800, 0xC440],
     color: '#49ff00'
 };
 var O = {
@@ -27,21 +27,21 @@ var O = {
     color: '#4900ff'
 };
 var S = {
-    blocks: [0x6C00, 0x4620, 0x06C0, 0x8C40],
+    blocks: [0x6C00, 0x4620, 0x6C00, 0x8C40],
     color: '#00ff92'
 };
 var T = {
-    blocks: [0x4E00, 0x4640, 0x0E40, 0x4C40],
+    blocks: [0x4E00, 0x4640, 0xE400, 0x4C40],
     color: '#ffdb00'
 };
 var Z = {
-    blocks: [0xC600, 0x2640, 0x0C60, 0x4C80],
+    blocks: [0xC600, 0x2640, 0xC600, 0x4C80],
     color: '#ff00db'
 };
 
 var gameBlocks = [I, J, L, O, S, T, Z];
 var gameHistory = [Z, S, Z, S];
-
+var nextBlock = random();
 function Tetromino(blockTemplate){
     var block = blockTemplate
     var rotation = 0;
@@ -50,14 +50,15 @@ function Tetromino(blockTemplate){
     var counter = 0;
     var falling = true;
     var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
-    this.spawn = function () {
+    this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
-        if (counter >= 30 && falling) {
+        if (counter >= 60 && falling) {
             counter = 0;
             if (y >= cvs.height / UNIT - length - 1) {
                 falling = false;
-                drawNext();
                 gameTetrominos.push(new Tetromino(nextBlock));
+                nextMove = true;
+                drawNext();
             } else {
                 y += 1;
             }
@@ -86,7 +87,7 @@ function Tetromino(blockTemplate){
     }
 
 }
-var gameTetrominos = [new Tetromino(random())];
+var gameTetrominos = [new Tetromino(nextBlock)];
 
 // when window loads run this function
 window.addEventListener("load", start());
@@ -108,7 +109,7 @@ function update() {
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
-    gameTetrominos.forEach((tetromino) => tetromino.spawn());
+    gameTetrominos.forEach((tetromino) => tetromino.render());
 
 }
 //loops through a hex binary array. Itterates callback with x and y values of blocks presend in a 4x4 hex grid

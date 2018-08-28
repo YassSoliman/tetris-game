@@ -39,8 +39,8 @@ var Z = {
 function Tetromino(blockTemplate){
     var block = blockTemplate
     var rotation = 0;
-    var x = 8;
-    var y = 2;
+    var x = 4;
+    var y = 1;
     var counter = 0;
     var falling = true;
     var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char)=>char!=='0').length
@@ -48,13 +48,16 @@ function Tetromino(blockTemplate){
         draw(block,rotation,x*UNIT,y*UNIT);
         if(counter>=30 && falling){
             counter=0;
-            if(y >= cvs.height/UNIT-length){
+            if(y >= cvs.height/UNIT-length-1){
                 falling=false;
             }else{
                 y+=1;
             }
         }
         counter++
+    }
+    this.collisionTest= function(unitX,unitY){
+
     }
 
 }
@@ -75,31 +78,31 @@ function start(){
 }
 
 function update() {
-    //Clear canveas
-    ctx.clearRect(0,0,cvs.width,cvs.height)
     // check logic
-    gameTetrominos.forEach((tetromino)=>tetromino.spawn());
+
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
+    gameTetrominos.forEach((tetromino)=>tetromino.spawn());
+
 }
-
-function FallBlock(block){
-
+//loops through a hex binary array. returns x and y values of UNITxUNIT blocks
+function HexLoop(hex,callback){
+    var x=0, y=0, bit;
+    for(bit = 0x8000; bit > 0; bit = bit >> 1,x+=UNIT){
+        if(x === 4*UNIT){
+            y += UNIT;
+            x = 0;
+        }
+        if(bit & hex){
+            // console.log('Block here: ' + bit);
+            callback(x, y);
+        }
+    }  
 }
 // One function that calculates position, rotation direction of any piece
 function draw(block, direction, x, y){
-	var posx=0, posy=0, bit;
-    for(bit = 0x8000; bit > 0; bit = bit >> 1,posx+=UNIT){
-        if(posx === 4*UNIT){
-            posy += UNIT;
-            posx = 0;
-        }
-        if(bit & block.blocks[direction]){
-            // console.log('Block here: ' + bit);
-            drawUnit(x + posx, y + posy, block.color);
-        }
-    }  
+    HexLoop(block.blocks[direction],(posx,posy)=>drawUnit(x + posx, y + posy, block.color));
 }
 
 

@@ -6,6 +6,8 @@ var cvs;
 var ctx;
 var score = 0;
 var level = 1;
+var nextMove = true;
+var nextBlock;
 
 // game blocks
 var I = {
@@ -36,7 +38,11 @@ var Z = {
     blocks: [0xC600, 0x2640, 0x0C60, 0x4C80],
     color: '#ff00db'
 };
-function Tetromino(blockTemplate) {
+
+var gameBlocks = [I, J, L, O, S, T, Z];
+var gameHistory = [Z, S, Z, S];
+
+function Tetromino(blockTemplate){
     var block = blockTemplate
     var rotation = 0;
     var x = 4;
@@ -48,8 +54,10 @@ function Tetromino(blockTemplate) {
         draw(block, rotation, x * UNIT, y * UNIT);
         if (counter >= 30 && falling) {
             counter = 0;
-            if (y >= cvs.height / UNIT - length - 1 || (gameTetrominos[1])) {
+            if (y >= cvs.height / UNIT - length - 1) {
                 falling = false;
+                drawNext();
+                gameTetrominos.push(new Tetromino(nextBlock));
             } else {
                 y += 1;
             }
@@ -78,7 +86,7 @@ function Tetromino(blockTemplate) {
     }
 
 }
-var gameTetrominos = [new Tetromino(I)];
+var gameTetrominos = [new Tetromino(random())];
 
 // when window loads run this function
 window.addEventListener("load", start());
@@ -202,7 +210,7 @@ function drawUI(color) {
     ctx.fillText("Space/Down Arrow", 14 * UNIT, 14 * UNIT + 5);
     ctx.fillText("Up Arrow", 14 * UNIT, 15 * UNIT + 10);
 
-    drawNext(S);
+    drawNext();
 
     // draw(J, 3, 12*UNIT, UNIT+15);
     // draw(L, 1, 12*UNIT, UNIT+15);
@@ -214,16 +222,33 @@ function drawUI(color) {
 }
 
 // draw next block preview
-function drawNext(block) {
-    switch (block) {
+function drawNext(){
+    if(nextMove){
+        nextBlock = random();
+        nextMove = false;
+    }
+    switch (nextBlock) {
         case J:
-            draw(block, 3, 12 * UNIT, UNIT + 15);
+            draw(nextBlock, 3, 12*UNIT, UNIT+15);
             break;
         case O:
-            draw(block, 1, 12 * UNIT, UNIT * 2);
+            draw(nextBlock, 1, 12*UNIT, UNIT*2);
             break;
         default:
-            draw(block, 1, 12 * UNIT, UNIT + 15);
+            draw(nextBlock, 1, 12*UNIT, UNIT+15);
             break;
     }
+}
+
+function random(){
+    var candidatePiece;
+    for(var i=0; i<5040; i++){
+        candidatePiece = gameBlocks[Math.floor(Math.random()*(gameBlocks.length))]; 
+        if(!(gameHistory.includes(candidatePiece))){
+            break;
+        }
+    }
+    gameHistory.pop();
+    gameHistory.unshift(candidatePiece);
+    return candidatePiece;
 }

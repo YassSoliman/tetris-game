@@ -8,6 +8,7 @@ var score = 0;
 var level = 1;
 var nextMove = true;
 var control = null;
+var grid = [...Array(20)].map(e => Array(10));
 
 
 // game blocks
@@ -86,12 +87,7 @@ function Tetromino(blockTemplate) {
         if (this.falling && counter >= speed) {
             counter = 0;
             if (y >= cvs.height / UNIT - length - 1 || gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 0, 1)))) {
-                this.falling = false;
-                var blockPositions = this.getBlockPositions();
-                this.getBlockPositions = () => blockPositions;
-                gameTetrominos.push(new Tetromino(nextBlock));
-                nextMove = true;
-                drawNext();
+                this.landed();
             } else {
                 y++;
             }
@@ -165,7 +161,20 @@ function Tetromino(blockTemplate) {
             });
         })
     }
-
+    
+    this.landed = function(){
+        this.falling = false;
+        var blockPositions = this.getBlockPositions();
+        this.getBlockPositions = () => blockPositions;
+        this.render = null;
+        this.getBlockPositions().forEach(function(posArr){
+            grid[posArr[1]-1][posArr[0]-1] = block.color;
+        });
+        gameTetrominos.push(new Tetromino(nextBlock));
+        nextMove = true;
+        drawNext();
+        checkLines();
+    }
 }
 var gameTetrominos = [new Tetromino(nextBlock)];
 
@@ -212,8 +221,11 @@ function update() {
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
+    drawFallenTetromino();
     gameTetrominos.forEach(function (tetromino) {
-        tetromino.render();
+        if(tetromino.render){
+            tetromino.render();
+        }
         tetromino.controller();
     });
 
@@ -232,6 +244,50 @@ function HexLoop(hex, callback) {
         }
     }
 }
+
+// Checks all the lines for a clear
+function checkLines(){
+    
+    var lines = [];
+    var streak = [];
+    for(var i=0; i<grid.length; i++){
+        for(var j=0; j<grid[i].length; j++){
+            if(grid[i][j] == null){
+                streak = [];
+                break;
+            } else {
+                streak.push(grid[i][j]);
+            }
+        }
+        if(streak.length == 10){
+            streak = [];
+            lines.push(i);
+        }
+    }
+    clearLines(lines);
+}
+
+// Clear the full lines
+// TODO Make a function that loops the grid and grid[i] and takes in a callback take has (i, j) as parameters
+// because repeating too many for loops instead of just making a function
+function clearLines(lines){
+    for(var i=0; i<lines.length; i++){
+        grid[lines[i]] = new Array(10);
+    }
+}
+
+// Draws fallen tetromino to grid
+function drawFallenTetromino(){
+    for(var i=0; i<grid.length; i++){
+        for(var j=0; j<grid[i].length; j++){
+            if(grid[i][j] != null){
+                drawUnit((j*UNIT)+UNIT, (i*UNIT)+UNIT, grid[i][j]);
+            }
+        } 
+    } 
+
+}
+
 // One function that calculates position, rotation direction of any piece
 function draw(block, direction, x, y) {
     HexLoop(block.blocks[direction], (posx, posy) => drawUnit(x + posx * UNIT, y + posy * UNIT, block.color));

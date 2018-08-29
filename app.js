@@ -133,7 +133,7 @@ function Tetromino(blockTemplate) {
             }
             control = null;
             moveCounter = 5;
-        } else if (!falling || control == null){
+        } else if (!this.falling || control == null){
             speed = FRAMERATE;
         }
         if (moveCounter != 0) {

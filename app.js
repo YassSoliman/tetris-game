@@ -42,6 +42,34 @@ var Z = {
 var gameBlocks = [I, J, L, O, S, T, Z];
 var gameHistory = [Z, S, Z, S];
 var nextBlock = random();
+function Timer(seconds,action){
+    var countedFrames = 0;
+    var countedSeconds = 0 ;
+    var Running = true;
+    var Paused = false;
+    this.count = function(){
+        if(!Paused && Running){
+            counter++
+            if(counter/FRAMERATE >= seconds){
+                counter=0;
+                countedSeconds++;
+                action();
+            }
+        }
+    }
+    this.stop = function(){
+        Running = false;
+    }
+    this.IsRunning = function(){
+        return Running;
+    }
+    this.pause = function(){
+        Paused = true;
+    }
+    this.resume = function(){
+        Paused = false;
+    }
+}
 function Tetromino(blockTemplate){
     var block = blockTemplate
     var rotation = 0;
@@ -105,7 +133,9 @@ function start() {
 }
 
 function update() {
-    // check logic
+    //Garbage colletor
+
+    // Check logic
 
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);

@@ -78,12 +78,12 @@ function Tetromino(blockTemplate){
     var y = 1;
     var counter = 0;
     var moveCounter = 0;
+    var speed = FRAMERATE;
     var falling = true;
-    var moving = false;
-    var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
+    var length = block.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
     this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
-        if (falling && counter >= 60) {
+        if (falling && counter >= speed) {
             counter = 0;
             if (y >= cvs.height / UNIT - length - 1) {
                 falling = false;
@@ -116,9 +116,14 @@ function Tetromino(blockTemplate){
                         rotation++;
                     }
                     break;
+                case 'drop': 
+                    speed = FRAMERATE/20; 
+                    break;
             }
             control = null; 
             moveCounter = 5;
+        } else if (!falling || control == null){
+            speed = FRAMERATE;
         }
         if(moveCounter!=0){
             moveCounter--;
@@ -168,8 +173,12 @@ function start() {
             case 39: // Right arrow
                 control = 'right';
                 break;
-            case 38: // Up Arrow
+            case 38: // Up arrow
                 control = 'rotate';
+                break;
+            case 40: // Down arrow
+            case 32: // Space
+                control = 'drop';
                 break;
         }
     });

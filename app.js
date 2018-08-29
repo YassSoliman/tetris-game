@@ -43,58 +43,59 @@ var Z = {
 var gameBlocks = [I, J, L, O, S, T, Z];
 var gameHistory = [Z, S, Z, S];
 var nextBlock = random();
-function Timer(seconds,action){
+function Timer(seconds, action) {
     var countedFrames = 0;
-    var countedSeconds = 0 ;
+    var countedSeconds = 0;
     var Running = true;
     var Paused = false;
-    this.count = function(){
-        if(!Paused && Running){
+    this.count = function () {
+        if (!Paused && Running) {
             counter++
-            if(counter/FRAMERATE >= seconds){
-                counter=0;
+            if (counter / FRAMERATE >= seconds) {
+                counter = 0;
                 countedSeconds++;
                 action();
             }
         }
     }
-    this.stop = function(){
+    this.stop = function () {
         Running = false;
     }
-    this.IsRunning = function(){
+    this.IsRunning = function () {
         return Running;
     }
-    this.pause = function(){
+    this.pause = function () {
         Paused = true;
     }
-    this.resume = function(){
+    this.resume = function () {
         Paused = false;
     }
 }
-function Tetromino(blockTemplate){
+function Tetromino(blockTemplate) {
     var block = blockTemplate
     var rotation = 0;
     var x = 4;
     var y = 1;
     var counter = 0;
     var moveCounter = 0;
-    var falling = true;
+    this.falling = true;
     var moving = false;
     var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
     this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
-        if (falling && counter >= 60) {
+        if (this.falling && counter >= 60) {
             counter = 0;
-            if (y >= cvs.height / UNIT - length - 1) {
-                falling = false;
-                this.getBlockPositions =  this.getBlockPositions();
+            if (y >= cvs.height / UNIT - length - 1 || gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 0, 1)))) {
+                this.falling = false;
+                var blockPositions = this.getBlockPositions();
+                this.getBlockPositions = () => blockPositions;
                 gameTetrominos.push(new Tetromino(nextBlock));
                 nextMove = true;
                 drawNext();
             } else {
-                y += 1;
+                y ++;
             }
-        } 
+        }
         counter++
     }
     /**
@@ -102,16 +103,20 @@ function Tetromino(blockTemplate){
      * Left, Right, Acceleration
      */
     this.controller = function () {
-        if(falling && control && moveCounter == 0){
-            switch(control){
+        if (this.falling && control && moveCounter == 0) {
+            switch (control) {
                 case 'left':
-                    x -= 1;
+                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), -1, 0)))) {
+                        x --;
+                    }
                     break;
                 case 'right':
-                    x += 1;
+                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 1, 0)))) {
+                        x ++;
+                    }
                     break;
                 case 'rotate':
-                    if(rotation == 3){
+                    if (rotation == 3) {
                         rotation = 0;
                     } else {
                         rotation++;
@@ -119,10 +124,10 @@ function Tetromino(blockTemplate){
                     length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
                     break;
             }
-            control = null; 
+            control = null;
             moveCounter = 5;
         }
-        if(moveCounter!=0){
+        if (moveCounter != 0) {
             moveCounter--;
         }
     }
@@ -131,10 +136,11 @@ function Tetromino(blockTemplate){
      * Returns the x,y positions of every block of this Tetromino relative to the.
      * Returns: [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
      */
-    this.getBlockPositions = function () {
+    this.getBlockPositions = function (potRot) {
         //TODO store BlockPositions as constant variable when the block has landed
+        var rot = potRot || rotation;
         var positions = [];
-        HexLoop(block.blocks[rotation], function (relX, relY) {
+        HexLoop(block.blocks[rot], function (relX, relY) {
             positions.push([x + relX, y + relY]);
         })
         return positions;
@@ -143,10 +149,10 @@ function Tetromino(blockTemplate){
     /**Collision dectections between getBlockPositions  
      * Returns true if collides
      * */
-    this.hitTest = function (BlockPositions,translX,translY) {
+    this.hitTest = function (BlockPositions, translX, translY) {
         return BlockPositions.some((position) => {
             return this.getBlockPositions().some((selfPosition) => {
-                return selfPosition[0]+translX === position[0] && selfPosition[1]+translY === position[1];
+                return selfPosition[0] + translX === position[0] && selfPosition[1] + translY === position[1];
             });
         })
     }
@@ -163,9 +169,9 @@ function start() {
     // tell browser which canvas context we're in
     ctx = cvs.getContext("2d");
     // Event listeners
-    window.addEventListener('keydown', function(evt){
+    window.addEventListener('keydown', function (evt) {
         console.log(evt.which);
-        switch(evt.which){
+        switch (evt.which) {
             case 37: // Left arrow
                 control = 'left';
                 break;
@@ -177,7 +183,7 @@ function start() {
                 break;
         }
     });
-    window.addEventListener('keyup', function(){
+    window.addEventListener('keyup', function () {
         control = null;
     });
 
@@ -193,7 +199,7 @@ function update() {
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
-    gameTetrominos.forEach(function(tetromino){
+    gameTetrominos.forEach(function (tetromino) {
         tetromino.render();
         tetromino.controller();
     });
@@ -310,29 +316,29 @@ function drawUI(color) {
 }
 
 // draw next block preview
-function drawNext(){
-    if(nextMove){
+function drawNext() {
+    if (nextMove) {
         nextBlock = random();
         nextMove = false;
     }
     switch (nextBlock) {
         case J:
-            draw(nextBlock, 3, 12*UNIT, UNIT+15);
+            draw(nextBlock, 3, 12 * UNIT, UNIT + 15);
             break;
         case O:
-            draw(nextBlock, 1, 12*UNIT, UNIT*2);
+            draw(nextBlock, 1, 12 * UNIT, UNIT * 2);
             break;
         default:
-            draw(nextBlock, 1, 12*UNIT, UNIT+15);
+            draw(nextBlock, 1, 12 * UNIT, UNIT + 15);
             break;
     }
 }
 
-function random(){
+function random() {
     var candidatePiece;
-    for(var i=0; i<5040; i++){
-        candidatePiece = gameBlocks[Math.floor(Math.random()*(gameBlocks.length))]; 
-        if(!(gameHistory.includes(candidatePiece))){
+    for (var i = 0; i < 5040; i++) {
+        candidatePiece = gameBlocks[Math.floor(Math.random() * (gameBlocks.length))];
+        if (!(gameHistory.includes(candidatePiece))) {
             break;
         }
     }

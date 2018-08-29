@@ -87,6 +87,7 @@ function Tetromino(blockTemplate){
             counter = 0;
             if (y >= cvs.height / UNIT - length - 1) {
                 falling = false;
+                this.getBlockPositions =  this.getBlockPositions();
                 gameTetrominos.push(new Tetromino(nextBlock));
                 nextMove = true;
                 drawNext();
@@ -115,6 +116,7 @@ function Tetromino(blockTemplate){
                     } else {
                         rotation++;
                     }
+                    length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
                     break;
             }
             control = null; 
@@ -138,7 +140,9 @@ function Tetromino(blockTemplate){
         return positions;
     }
 
-    /**Collision dectections between getBlockPositions */
+    /**Collision dectections between getBlockPositions  
+     * Returns true if collides
+     * */
     this.hitTest = function (BlockPositions,translX,translY) {
         return BlockPositions.some((position) => {
             return this.getBlockPositions().some((selfPosition) => {

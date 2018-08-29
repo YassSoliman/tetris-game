@@ -93,7 +93,7 @@ function Tetromino(blockTemplate) {
                 nextMove = true;
                 drawNext();
             } else {
-                y ++;
+                y++;
             }
         }
         counter++
@@ -107,21 +107,25 @@ function Tetromino(blockTemplate) {
             switch (control) {
                 case 'left':
                     if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), -1, 0)))) {
-                        x --;
+                        x--;
                     }
                     break;
                 case 'right':
                     if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 1, 0)))) {
-                        x ++;
+                        x++;
                     }
                     break;
                 case 'rotate':
-                    if (rotation == 3) {
-                        rotation = 0;
+                    var potRot = rotation;
+                    if (potRot == 3) {
+                        potRot = 0;
                     } else {
-                        rotation++;
+                        potRot++;
                     }
-                    length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
+                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 0, 0, potRot)))) {
+                        rotation = potRot;
+                        length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
+                    }
                     break;
             }
             control = null;
@@ -149,9 +153,9 @@ function Tetromino(blockTemplate) {
     /**Collision dectections between getBlockPositions  
      * Returns true if collides
      * */
-    this.hitTest = function (BlockPositions, translX, translY) {
+    this.hitTest = function (BlockPositions, translX, translY, potRot) {
         return BlockPositions.some((position) => {
-            return this.getBlockPositions().some((selfPosition) => {
+            return this.getBlockPositions(potRot).some((selfPosition) => {
                 return selfPosition[0] + translX === position[0] && selfPosition[1] + translY === position[1];
             });
         })

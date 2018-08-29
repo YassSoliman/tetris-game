@@ -7,6 +7,7 @@ var ctx;
 var score = 0;
 var level = 1;
 var nextMove = true;
+var control = null;
 
 
 // game blocks
@@ -76,11 +77,13 @@ function Tetromino(blockTemplate){
     var x = 4;
     var y = 1;
     var counter = 0;
+    var moveCounter = 0;
     var falling = true;
+    var moving = false;
     var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
     this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
-        if (counter >= 60 && falling) {
+        if (falling && counter >= 60) {
             counter = 0;
             if (y >= cvs.height / UNIT - length - 1) {
                 falling = false;
@@ -90,9 +93,38 @@ function Tetromino(blockTemplate){
             } else {
                 y += 1;
             }
-        }
+        } 
         counter++
     }
+    /**
+     * Makes all the movement in the game work
+     * Left, Right, Acceleration
+     */
+    this.controller = function () {
+        if(falling && control && moveCounter == 0){
+            switch(control){
+                case 'left':
+                    x -= 1;
+                    break;
+                case 'right':
+                    x += 1;
+                    break;
+                case 'rotate':
+                    if(rotation == 3){
+                        rotation = 0;
+                    } else {
+                        rotation++;
+                    }
+                    break;
+            }
+            control = null; 
+            moveCounter = 5;
+        }
+        if(moveCounter!=0){
+            moveCounter--;
+        }
+    }
+
     /**
      * Returns the x,y positions of every block of this Tetromino relative to the.
      * Returns: [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
@@ -127,6 +159,23 @@ function start() {
     // tell browser which canvas context we're in
     ctx = cvs.getContext("2d");
     // Event listeners
+    window.addEventListener('keydown', function(evt){
+        console.log(evt.which);
+        switch(evt.which){
+            case 37: // Left arrow
+                control = 'left';
+                break;
+            case 39: // Right arrow
+                control = 'right';
+                break;
+            case 38: // Up Arrow
+                control = 'rotate';
+                break;
+        }
+    });
+    window.addEventListener('keyup', function(){
+        control = null;
+    });
 
     // window updates every frame
     window.setInterval(update, 1000 / FRAMERATE);
@@ -140,7 +189,10 @@ function update() {
     // draw everything
     ctx.clearRect(0, 0, cvs.width, cvs.height);
     drawUI('#251c17');
-    gameTetrominos.forEach((tetromino) => tetromino.render());
+    gameTetrominos.forEach(function(tetromino){
+        tetromino.render();
+        tetromino.controller();
+    });
 
 }
 //loops through a hex binary array. Itterates callback with x and y values of blocks presend in a 4x4 hex grid

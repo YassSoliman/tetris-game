@@ -7,6 +7,7 @@ var ctx;
 var score = 0;
 var level = 1;
 var nextMove = true;
+var control = null;
 
 
 // game blocks
@@ -48,22 +49,41 @@ function Tetromino(blockTemplate){
     var x = 4;
     var y = 1;
     var counter = 0;
+    var moveCounter = 0;
     var falling = true;
+    var moving = false;
     var length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
     this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
-        if (counter >= 60 && falling) {
-            counter = 0;
-            if (y >= cvs.height / UNIT - length - 1) {
-                falling = false;
-                gameTetrominos.push(new Tetromino(nextBlock));
-                nextMove = true;
-                drawNext();
-            } else {
-                y += 1;
+        if(falling){
+            if (counter >= 60) {
+                counter = 0;
+                if (y >= cvs.height / UNIT - length - 1) {
+                    falling = false;
+                    gameTetrominos.push(new Tetromino(nextBlock));
+                    nextMove = true;
+                    drawNext();
+                } else {
+                    y += 1;
+                }
+            } 
+            if(control && moveCounter == 0){
+                switch(control){
+                    case 'left':
+                        x -= 1;
+                        break;
+                    case 'right':
+                        x += 1;
+                        break;
+                }
+                control = null; 
+                moveCounter = 5;
             }
         }
         counter++
+        if(moveCounter!=0){
+            moveCounter--;
+        }
     }
     /**
      * Returns the x,y positions of every block of this Tetromino relative to the.
@@ -99,6 +119,19 @@ function start() {
     // tell browser which canvas context we're in
     ctx = cvs.getContext("2d");
     // Event listeners
+    window.addEventListener('keydown', function(evt){
+        switch(evt.which){
+            case 37: // Left arrow
+                control = 'left';
+                break;
+            case 39: // Right arrow
+                control = 'right';
+                break;
+        }
+    });
+    window.addEventListener('keyup', function(){
+        control = null;
+    });
 
     // window updates every frame
     window.setInterval(update, 1000 / FRAMERATE);

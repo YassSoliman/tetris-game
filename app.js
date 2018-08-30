@@ -332,16 +332,23 @@ function drawUI(color) {
         [0x8888,0x0000,0x1111,0x0000,0x8888],
         [0x8F00,0x0F00,0x1F00,0x0F00,0x8800]
     ]
-    for (var i = 0; i < 22; i++) {
-        drawUnit(UNIT * i, 0, color);
-        drawUnit(0, UNIT * i, color);
-        drawUnit((cvs.width) - UNIT, UNIT * i, color);
-        drawUnit((cvs.width) - UNIT * 6, UNIT * i, color);
-        drawUnit(UNIT * i, (cvs.height) - UNIT, color);
-        if (i >= 12) {
-            drawUnit(UNIT * i, UNIT * 5, color);
-        }
-    }
+    HEXUI.forEach(function(chunk,indexY){
+        var multiplierY = indexY*4;
+        chunk.forEach(function(hexBlocks,indexX){
+            var multiplierX = indexX*4;
+            HexLoop(hexBlocks,(x,y)=>drawUnit((x+multiplierX)*UNIT,(y+multiplierY)*UNIT,color))
+        });
+    });
+    //for (var i = 0; i < 22; i++) {
+    //    drawUnit(UNIT * i, 0, color);
+    //    drawUnit(0, UNIT * i, color);
+    //    drawUnit((cvs.width) - UNIT, UNIT * i, color);
+    //    drawUnit((cvs.width) - UNIT * 6, UNIT * i, color);
+    //    drawUnit(UNIT * i, (cvs.height) - UNIT, color);
+    //    if (i >= 12) {
+    //        drawUnit(UNIT * i, UNIT * 5, color);
+    //    }
+    //}
     // Score and Level and controls text
     ctx.font = "25px sans-serif";
     ctx.textAlign = 'center'

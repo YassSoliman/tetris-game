@@ -86,7 +86,7 @@ function Tetromino(blockTemplate) {
         draw(block, rotation, x * UNIT, y * UNIT);
         if (this.falling && counter >= speed) {
             counter = 0;
-            if (y >= cvs.height / UNIT - length - 1 || gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 0, 1)))) {
+            if (y >= cvs.height / UNIT - length - 1 ||  this.gridHitTest(grid, 0, 1)) {
                 this.landed();
             } else {
                 y++;
@@ -102,12 +102,12 @@ function Tetromino(blockTemplate) {
         if (this.falling && control && moveCounter == 0) {
             switch (control) {
                 case 'left':
-                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), -1, 0)))) {
+                    if ( !this.gridHitTest(grid, -1, 0)) {
                         x--;
                     }
                     break;
                 case 'right':
-                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 1, 0)))) {
+                    if ( !this.gridHitTest(grid, 1, 0)) {
                         x++;
                     }
                     break;
@@ -118,7 +118,7 @@ function Tetromino(blockTemplate) {
                     } else {
                         potRot++;
                     }
-                    if (!gameTetrominos.some((tetromino) => (!tetromino.falling && this.hitTest(tetromino.getBlockPositions(), 0, 0, potRot)))) {
+                    if ( !this.gridHitTest(grid, 0, 0, potRot)) {
                         rotation = potRot;
                         length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
                     }
@@ -143,7 +143,7 @@ function Tetromino(blockTemplate) {
      */
     this.getBlockPositions = function (potRot) {
         //TODO store BlockPositions as constant variable when the block has landed
-        var rot = potRot || rotation;
+        var rot = (potRot==null)?  rotation : potRot;
         var positions = [];
         HexLoop(block.blocks[rot], function (relX, relY) {
             positions.push([x + relX, y + relY]);
@@ -160,6 +160,13 @@ function Tetromino(blockTemplate) {
                 return selfPosition[0] + translX === position[0] && selfPosition[1] + translY === position[1];
             });
         })
+    }
+
+    /**Collision check with game grid variable */
+    this.gridHitTest = function(grid, translX, translY, potRot){
+        return this.getBlockPositions(potRot).some(function(posArr){
+            return !!grid[posArr[1]-1+translY][posArr[0]-1+translX];
+        });
     }
     
     this.landed = function(){

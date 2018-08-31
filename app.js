@@ -1,3 +1,4 @@
+/*jshint esversion: 6 */
 const FRAMERATE = 60;
 var UNIT = 25;
 
@@ -9,7 +10,7 @@ var level = 1;
 var nextMove = true;
 var control = null;
 var grid = [...Array(20)].map(e => Array(10));
-
+var UIHitbox = [];
 
 // game blocks
 var I = {
@@ -51,29 +52,29 @@ function Timer(seconds, action) {
     var Paused = false;
     this.count = function () {
         if (!Paused && Running) {
-            counter++
+            counter++;
             if (counter / FRAMERATE >= seconds) {
                 counter = 0;
                 countedSeconds++;
                 action();
             }
         }
-    }
+    };
     this.stop = function () {
         Running = false;
-    }
+    };
     this.IsRunning = function () {
         return Running;
-    }
+    };
     this.pause = function () {
         Paused = true;
-    }
+    };
     this.resume = function () {
         Paused = false;
-    }
+    };
 }
 function Tetromino(blockTemplate) {
-    var block = blockTemplate
+    var block = blockTemplate;
     var rotation = 0;
     var x = 4;
     var y = 1;
@@ -81,19 +82,19 @@ function Tetromino(blockTemplate) {
     var moveCounter = 0;
     var speed = FRAMERATE;
     this.falling = true;
-    var length = block.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
+    //var length = block.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
     this.render = function () {
         draw(block, rotation, x * UNIT, y * UNIT);
         if (this.falling && counter >= speed) {
             counter = 0;
-            if (y >= cvs.height / UNIT - length - 1 ||  this.gridHitTest(grid, 0, 1)) {
+            if ( this.hitTest(UIHitbox, 0, 1) || this.gridHitTest(grid, 0, 1) ) {
                 this.landed();
             } else {
                 y++;
             }
         }
-        counter++
-    }
+        counter++;
+    };
     /**
      * Makes all the movement in the game work
      * Left, Right, Acceleration
@@ -102,12 +103,12 @@ function Tetromino(blockTemplate) {
         if (this.falling && control && moveCounter == 0) {
             switch (control) {
                 case 'left':
-                    if ( !this.gridHitTest(grid, -1, 0)) {
+                    if (!this.gridHitTest(grid, -1, 0) && !this.hitTest(UIHitbox, -1, 0)) {
                         x--;
                     }
                     break;
                 case 'right':
-                    if ( !this.gridHitTest(grid, 1, 0)) {
+                    if (!this.gridHitTest(grid, 1, 0) && !this.hitTest(UIHitbox, 1, 0)) {
                         x++;
                     }
                     break;
@@ -118,24 +119,24 @@ function Tetromino(blockTemplate) {
                     } else {
                         potRot++;
                     }
-                    if ( !this.gridHitTest(grid, 0, 0, potRot)) {
+                    if (!this.gridHitTest(grid, 0, 0, potRot) && !this.hitTest(UIHitbox, 0, 0, potRot)) {
                         rotation = potRot;
-                        length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length
+                        length = blockTemplate.blocks[rotation].toString(16).split("").filter((char) => char !== '0').length;
                     }
                     break;
-                case 'drop': 
-                    speed = FRAMERATE/20; 
+                case 'drop':
+                    speed = FRAMERATE / 20;
                     break;
             }
             control = null;
             moveCounter = 5;
-        } else if (!this.falling || control == null){
+        } else if (!this.falling || control == null) {
             speed = FRAMERATE;
         }
         if (moveCounter != 0) {
             moveCounter--;
         }
-    }
+    };
 
     /**
      * Returns the x,y positions of every block of this Tetromino relative to the.
@@ -143,13 +144,13 @@ function Tetromino(blockTemplate) {
      */
     this.getBlockPositions = function (potRot) {
         //TODO store BlockPositions as constant variable when the block has landed
-        var rot = (potRot==null)?  rotation : potRot;
+        var rot = (potRot == null) ? rotation : potRot;
         var positions = [];
         HexLoop(block.blocks[rot], function (relX, relY) {
             positions.push([x + relX, y + relY]);
-        })
+        });
         return positions;
-    }
+    };
 
     /**Collision dectections between getBlockPositions  
      * Returns true if collides
@@ -159,29 +160,29 @@ function Tetromino(blockTemplate) {
             return this.getBlockPositions(potRot).some((selfPosition) => {
                 return selfPosition[0] + translX === position[0] && selfPosition[1] + translY === position[1];
             });
-        })
-    }
+        });
+    };
 
     /**Collision check with game grid variable */
-    this.gridHitTest = function(grid, translX, translY, potRot){
-        return this.getBlockPositions(potRot).some(function(posArr){
-            return !!grid[posArr[1]-1+translY][posArr[0]-1+translX];
+    this.gridHitTest = function (grid, translX, translY, potRot) {
+        return this.getBlockPositions(potRot).some(function (posArr) {
+            return !!grid[posArr[1] - 1 + translY][posArr[0] - 1 + translX];
         });
-    }
-    
-    this.landed = function(){
+    };
+
+    this.landed = function () {
         this.falling = false;
         var blockPositions = this.getBlockPositions();
         this.getBlockPositions = () => blockPositions;
         this.render = null;
-        this.getBlockPositions().forEach(function(posArr){
-            grid[posArr[1]-1][posArr[0]-1] = block.color;
+        this.getBlockPositions().forEach(function (posArr) {
+            grid[posArr[1] - 1][posArr[0] - 1] = block.color;
         });
         gameTetrominos.push(new Tetromino(nextBlock));
         nextMove = true;
         drawNext();
         checkLines();
-    }
+    };
 }
 var gameTetrominos = [new Tetromino(nextBlock)];
 
@@ -230,7 +231,7 @@ function update() {
     drawUI('#251c17');
     drawFallenTetromino();
     gameTetrominos.forEach(function (tetromino) {
-        if(tetromino.render){
+        if (tetromino.render) {
             tetromino.render();
         }
         tetromino.controller();
@@ -253,20 +254,19 @@ function HexLoop(hex, callback) {
 }
 
 // Checks all the lines for a clear
-function checkLines(){
-    
+function checkLines() {
     var lines = [];
     var streak = [];
-    for(var i=0; i<grid.length; i++){
-        for(var j=0; j<grid[i].length; j++){
-            if(grid[i][j] == null){
+    for (var i = 0; i < grid.length; i++) {
+        for (var j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] == null) {
                 streak = [];
                 break;
             } else {
                 streak.push(grid[i][j]);
             }
         }
-        if(streak.length == 10){
+        if (streak.length == 10) {
             streak = [];
             lines.push(i);
         }
@@ -277,21 +277,21 @@ function checkLines(){
 // Clear the full lines
 // TODO Make a function that loops the grid and grid[i] and takes in a callback take has (i, j) as parameters
 // because repeating too many for loops instead of just making a function
-function clearLines(lines){
-    for(var i=0; i<lines.length; i++){
+function clearLines(lines) {
+    for (var i = 0; i < lines.length; i++) {
         grid[lines[i]] = new Array(10);
     }
 }
 
 // Draws fallen tetromino to grid
-function drawFallenTetromino(){
-    for(var i=0; i<grid.length; i++){
-        for(var j=0; j<grid[i].length; j++){
-            if(grid[i][j] != null){
-                drawUnit((j*UNIT)+UNIT, (i*UNIT)+UNIT, grid[i][j]);
+function drawFallenTetromino() {
+    for (var i = 0; i < grid.length; i++) {
+        for (var j = 0; j < grid[i].length; j++) {
+            if (grid[i][j] != null) {
+                drawUnit((j * UNIT) + UNIT, (i * UNIT) + UNIT, grid[i][j]);
             }
-        } 
-    } 
+        }
+    }
 
 }
 
@@ -325,33 +325,27 @@ function drawUnit(x, y, color) {
 // draw user interface
 function drawUI(color) {
     var HEXUI = [
-        [0xF888,0xF000,0xF111,0xF000,0x8888],
-        [0x8888,0x0000,0x1111,0x0000,0x8888],
-        [0x8888,0x0000,0x1111,0x0000,0x8888],
-        [0x8888,0x0000,0x1111,0x0000,0x8888],
-        [0x8888,0x0000,0x1111,0x0000,0x8888],
-        [0x8F00,0x0F00,0x1F00,0x0F00,0x8800]
-    ]
-    HEXUI.forEach(function(chunk,indexY){
-        var multiplierY = indexY*4;
-        chunk.forEach(function(hexBlocks,indexX){
-            var multiplierX = indexX*4;
-            HexLoop(hexBlocks,(x,y)=>drawUnit((x+multiplierX)*UNIT,(y+multiplierY)*UNIT,color))
+        [0xF888, 0xF000, 0xF111, 0xF000, 0x8888],
+        [0x8888, 0x0000, 0x1111, 0x0F00, 0x8888],
+        [0x8888, 0x0000, 0x1111, 0x0000, 0x8888],
+        [0x8888, 0x0000, 0x1111, 0x0000, 0x8888],
+        [0x8888, 0x0000, 0x1111, 0x0000, 0x8888],
+        [0x8F00, 0x0F00, 0x1F00, 0x0F00, 0x8800]
+    ];
+    UIHitbox = [];
+    HEXUI.forEach(function (chunk, indexY) {
+        var multiplierY = indexY * 4;
+        chunk.forEach(function (hexBlocks, indexX) {
+            var multiplierX = indexX * 4;
+            HexLoop(hexBlocks, function (x, y) {
+                drawUnit((x + multiplierX) * UNIT, (y + multiplierY) * UNIT, color);
+                UIHitbox.push([x + multiplierX, y + multiplierY]);
+            });
+
         });
     });
-    //for (var i = 0; i < 22; i++) {
-    //    drawUnit(UNIT * i, 0, color);
-    //    drawUnit(0, UNIT * i, color);
-    //    drawUnit((cvs.width) - UNIT, UNIT * i, color);
-    //    drawUnit((cvs.width) - UNIT * 6, UNIT * i, color);
-    //    drawUnit(UNIT * i, (cvs.height) - UNIT, color);
-    //    if (i >= 12) {
-    //        drawUnit(UNIT * i, UNIT * 5, color);
-    //    }
-    //}
-    // Score and Level and controls text
     ctx.font = "25px sans-serif";
-    ctx.textAlign = 'center'
+    ctx.textAlign = 'center';
     ctx.fillStyle = 'blue';
     ctx.fillText("Score", 14 * UNIT, 7 * UNIT);
     ctx.fillText("Level", 14 * UNIT, 9 * UNIT + 10);
@@ -383,27 +377,20 @@ function drawUI(color) {
     // Controls text
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'lightcoral';
-    ctx.font = "14px sans-serif"
+    ctx.font = "14px sans-serif";
     ctx.fillText("Movement", 14 * UNIT, 12 * UNIT + 15);
     ctx.strokeText("Movement", 14 * UNIT, 12 * UNIT + 15);
     ctx.fillText("Accelerate", 14 * UNIT, 13 * UNIT + 20);
     ctx.strokeText("Accelerate", 14 * UNIT, 13 * UNIT + 20);
     ctx.fillText("Rotate", 14 * UNIT, 15 * UNIT);
     ctx.strokeText("Rotate", 14 * UNIT, 15 * UNIT);
-    ctx.font = "10px sans-serif"
+    ctx.font = "10px sans-serif";
     ctx.fillText("Left/Right Arrows", 14 * UNIT, 13 * UNIT);
     ctx.fillText("Space/Down Arrow", 14 * UNIT, 14 * UNIT + 5);
     ctx.fillText("Up Arrow", 14 * UNIT, 15 * UNIT + 10);
 
     drawNext();
 
-    // draw(J, 3, 12*UNIT, UNIT+15);
-    // draw(L, 1, 12*UNIT, UNIT+15);
-    // draw(I, 1, 12*UNIT, UNIT+15);
-    // draw(O, 1, 12*UNIT, UNIT*2);
-    // draw(S, 1, 12*UNIT, UNIT+15);
-    // draw(Z, 1, 12*UNIT, UNIT+15);
-    // draw(T, 1, 12*UNIT, UNIT+15);
 }
 
 // draw next block preview

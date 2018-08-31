@@ -11,7 +11,7 @@ var nextMove = true;
 var control = null;
 var grid = [...Array(20)].map(e => Array(10));
 var UIHitbox = [];
-
+var GameOver = false;
 // game blocks
 var I = {
     blocks: [0x2222, 0xF000, 0x4444, 0xF000],
@@ -88,7 +88,10 @@ function Tetromino(blockTemplate) {
         if (this.falling && counter >= speed) {
             counter = 0;
             if ( this.hitTest(UIHitbox, 0, 1) || this.gridHitTest(grid, 0, 1) ) {
-                this.landed();
+                GameOver = (y===1);
+                if(!GameOver){
+                   this.landed();
+                }
             } else {
                 y++;
             }
@@ -233,8 +236,9 @@ function update() {
     gameTetrominos.forEach(function (tetromino) {
         if (tetromino.render) {
             tetromino.render();
+        }if(!GameOver){
+            tetromino.controller();
         }
-        tetromino.controller();
     });
 
 }

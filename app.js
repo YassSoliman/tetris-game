@@ -283,7 +283,8 @@ function checkLines() {
 // because repeating too many for loops instead of just making a function
 function clearLines(lines) {
     for (var i = 0; i < lines.length; i++) {
-        grid[lines[i]] = new Array(10);
+        grid.splice(lines[i],1);
+        grid.splice(0,0,new Array(10));
     }
 }
 
